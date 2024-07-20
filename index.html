@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fakestore</title>
+    <link rel="stylesheet" href="../node_modules/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.css">
+    <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
+    <script type="text/javascript">
+        function Loadcategories() {
+            fetch("https://fakestoreapi.com/products/categories")
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(categories) {
+                    categories.unshift("all");
+                    categories.forEach(function(category) {
+                        var option = document.createElement("option");
+                        option.text = category.toUpperCase();
+                        option.value = category;
+                        document.getElementById("lstcategories").appendChild(option);
+                    });
+                })
+                .catch(function(error) {
+                    console.error('Error fetching categories:', error);
+                });
+        }
+    
+        function loadProducts(url) {
+            fetch(url)
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(products) {
+                    var mainElement = document.querySelector("main");
+                    mainElement.innerHTML = ""; // Clear previous products
+    
+                    products.forEach(function(product) {
+                        var div = document.createElement("div");
+                        div.className = "card p-2 m-2";
+                        div.style.width = "200px";
+                        div.innerHTML = `
+                            <img src="${product.image}" class="card-img-top" height="120">
+                            <div class="card-header" style="height:130px">
+                                ${product.title}
+                            </div>
+                            <div class="card-body">
+                                <dl>
+                                    <dt>Price</dt>
+                                    <dd>${product.price}</dd>
+                                    <dt>Rating</dt>
+                                    <dd>
+                                        <span class="badge bg-success p-1 rounded">${product.rating.rate}<span class="bi bi-star-fill"></span></span> [${product.rating.count} ratings]
+                                    </dd>
+                                </dl>
+                            </div>
+                            <div class="card-footer">
+                                <button class="btn btn-warning w-100 bi bi-cart4"> Add to cart </button>
+                            </div>
+                        `;
+                        mainElement.appendChild(div);
+                    });
+                })
+                .catch(function(error) {
+                    console.error('Error fetching products:', error);
+                });
+        }
+    
+        function bodyload() {
+            Loadcategories();
+            loadProducts("https://fakestoreapi.com/products");
+        }
+    </script>
+    
+    
+</head>
+<body class="container-fluid" onload="bodyload()">
+    <header class="d-flex bg-light border border-1 justify-content-between p-2 mt-2">
+        <div>
+            <button class="bi bi-justify btn btn-light" data-bs-toggle="offcanvas" data-bs-target="#menu"><span class="fs-5 fw-bold">Fakestore.</span></button>
+        </div>
+        <div class="fs-5">
+            <span class="mx-3"><a>Home</a></span>
+            <span class="mx-3"><a>Electric</a></span>
+            <span class="mx-3"><a>Jewelwery</a></span>
+            <span class="mx-3"><a>Men's clothing</a></span>
+            <span class="mx-3"><a>Woman's clothing</a></span>
+        </div>
+        <div>
+            <button class="btn btn-warning bi bi-cart4 position-relative"><span class="badge position-absolute bg-danger rounded rounded-circle"></span></button>
+        </div>
+    </header>
+    <section class="mt-4 row">
+        <nav class="col-2 offcanvas offcanvas-start" id="menu">
+            <div class="offcanvas-header">
+                <h2>Fakestore</h2>
+                <button class="btn btn-close" data-bs-dismiss="offcanvas"></button>
+            </div>
+            <div class="offcanvas-body">
+            <label class="form-label fw-bold">Select Category</label>
+            <div>
+                <select class="form-select" id="lstcategories"></select>
+            </div>
+        </div>
+        </nav>
+        <main class="col-10 d-flex flex-wrap" style="height: 500px;">
+
+        </main>
+    </section>
+</body>
+</html>
